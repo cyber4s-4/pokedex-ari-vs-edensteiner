@@ -5,7 +5,6 @@ const webpack = require('webpack-stream');
 const sass = require('gulp-sass')(require('sass'));
 const browserSync = require('browser-sync').create();
 const { exec } = require('child_process');
-
 const webpackConfig = require('./webpack.config.js');
 
 // Removes previous dist
