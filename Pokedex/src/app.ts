@@ -5,12 +5,6 @@ async function fetchAPI(pokemon: string) {
       `https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}/`
     );
     if (response.status == 404 || pokemon === "#") {
-      //hide
-      const pokemonDiv = document.getElementById(
-        "pokemon-div"
-      ) as HTMLDivElement;
-      pokemonDiv.style.display = "none";
-      // error
       throw "No pokemon matched your search!";
     }
     let json = await response.json();
@@ -61,6 +55,8 @@ async function fetchAPI(pokemon: string) {
       statsList!.appendChild(statItem);
     }
   } catch (error) {
+    const pokemonDiv = document.getElementById("pokemon-div") as HTMLDivElement;
+    pokemonDiv.style.display = "none";
     alert("No pokemon matched your search!");
   }
 }
