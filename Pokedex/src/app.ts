@@ -94,4 +94,59 @@ function load() {
   };
 }
 
+//interface for pokemon data
+interface Data {
+  name: string;
+  front_image: string;
+  back_image: string;
+  abilities: string[];
+  types: string[];
+  stats: string[];
+}
+
+//class for pokemon
+class Pokemon {
+  data: Data;
+  constructor(data: Data) {
+    this.data = data;
+  }
+}
+
+//gets N pokemons
+async function getPokemons(n: number) {
+  let pokemonData: Pokemon[] = [];
+  for (let i = 1; i <= n; i++) {
+    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}/`);
+    let json = await response.json();
+    let data = {
+      //name
+      name: json.name,
+      //front image
+      front_image: json.sprites.front_default,
+      //back image
+      back_image: json.sprites.back_default,
+      //abilites array
+      abilities: json.abilities
+        .map((arr) => arr.ability)
+        .map((ability) => ability.name),
+      //types array
+      types: json.types.map((arr) => arr.type).map((type) => type.name),
+      //stats array
+      stats: json.stats
+        .map((arr) => arr.stat)
+        .map(
+          (stat) =>
+            `${stat.name}: ${
+              json.stats.find((obj) => obj.stat.name === stat.name).base_stat
+            }`
+        ),
+    };
+    const pokemon = new Pokemon(data);
+    pokemonData.push(pokemon);
+  }
+  return pokemonData;
+}
+// console logs first 100 pokemons
+// getPokemons(100).then((data) => console.log(data));
+
 load();
