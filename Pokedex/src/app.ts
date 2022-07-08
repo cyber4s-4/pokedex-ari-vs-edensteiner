@@ -79,6 +79,10 @@ function clearSearch() {
 function clearPage() {
   const previewDiv = document.getElementById("pokemonPreviewList");
   previewDiv!.innerHTML = "";
+  for(let i=1; i<=5; i++){
+    const pageButton = document.getElementById("page"+i);
+    pageButton!.classList.remove("currentPage");
+  }
 }
 
 function load() {
@@ -99,9 +103,13 @@ function load() {
   };
   for(let i=1; i<=5; i++){
     const pageButton = document.getElementById("page"+i);
-    pageButton!.addEventListener("click", () => getPage(i));
+    pageButton!.addEventListener("click", () => {
+      getPage(i);
+      pageButton!.classList.add("currentPage");
+    });
   }
   getPage(1);
+  document.getElementById("page1")!.classList.add("currentPage");
 }
 
 //interface for pokemon data
@@ -160,8 +168,8 @@ async function getPokemons(n: number, x: number) {
 
 async function getPage(page: number) {
   clearPage();
-  const lastPokemonId = page * 20;
-  const firstPokemonId = lastPokemonId - 19;
+  const lastPokemonId = page * 24;
+  const firstPokemonId = lastPokemonId - 23;
   const pokemons = await getPokemons(lastPokemonId, firstPokemonId);
   for (let pokemon of pokemons) {
     const count = pokemons.indexOf(pokemon)
