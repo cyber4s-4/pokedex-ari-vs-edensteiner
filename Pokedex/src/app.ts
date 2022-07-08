@@ -1,5 +1,5 @@
 async function fetchAPI(pokemon: string) {
-  clear();
+  clearSearch();
   try {
     let response = await fetch(
       `https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}/`
@@ -65,7 +65,7 @@ async function fetchAPI(pokemon: string) {
   }
 }
 
-function clear() {
+function clearSearch() {
   let htmlToClear = document.getElementsByClassName("innerHTML");
   for (let element of htmlToClear) {
     element.innerHTML = "";
@@ -74,6 +74,11 @@ function clear() {
   for (let element of srcToClear) {
     element.removeAttribute("src");
   }
+}
+
+function clearPage() {
+  const previewDiv = document.getElementById("pokemonPreviewList");
+  previewDiv!.innerHTML = "";
 }
 
 function load() {
@@ -92,6 +97,11 @@ function load() {
       searchBar.value = "";
     }
   };
+  for(let i=1; i<=5; i++){
+    const pageButton = document.getElementById("page"+i);
+    pageButton!.addEventListener("click", () => getPage(i));
+  }
+  getPage(1);
 }
 
 //interface for pokemon data
@@ -113,9 +123,9 @@ class Pokemon {
 }
 
 //gets N pokemons
-async function getPokemons(n: number) {
+async function getPokemons(n: number, x: number) {
   let pokemonData: Pokemon[] = [];
-  for (let i = 1; i <= n; i++) {
+  for (let i = x; i <= n; i++) {
     let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}/`);
     let json = await response.json();
     let data = {
@@ -136,8 +146,7 @@ async function getPokemons(n: number) {
         .map((arr) => arr.stat)
         .map(
           (stat) =>
-            `${stat.name}: ${
-              json.stats.find((obj) => obj.stat.name === stat.name).base_stat
+            `${stat.name}: ${json.stats.find((obj) => obj.stat.name === stat.name).base_stat
             }`
         ),
     };
@@ -147,6 +156,52 @@ async function getPokemons(n: number) {
   return pokemonData;
 }
 // console logs first 100 pokemons
-// getPokemons(100).then((data) => console.log(data));
+// getPokemons(100, 1).then((data) => console.log(data));
+
+async function getPage(page: number) {
+  clearPage();
+  const lastPokemonId = page * 20;
+  const firstPokemonId = lastPokemonId - 19;
+  const pokemons = await getPokemons(lastPokemonId, firstPokemonId);
+  for (let pokemon of pokemons) {
+    const count = pokemons.indexOf(pokemon)
+    buildPokemon(pokemon, count);
+  }
+}
+
+function buildPokemon(this: any, pokemon: Pokemon, count: number) {
+  //new pokemon div
+  const pokemonDiv = document.createElement("div");
+  pokemonDiv.classList.add("pokemonPreview");
+  pokemonDiv.setAttribute("id", "preview"+count);
+  //name
+  const name = document.createElement("h3");
+  // name.setAttribute("id", pokemon.data.name);
+  name.innerHTML = `${pokemon.data.name
+    .charAt(0)
+    .toUpperCase()}${pokemon.data.name.substring(1)}`;
+  //front image
+  const frontImg = document.createElement("img");
+  frontImg.setAttribute("src", pokemon.data.front_image);
+  //back image
+  const backImg = document.createElement("img");
+  backImg!.setAttribute("src", pokemon.data.back_image);
+  //setting onclick
+  //appending
+  pokemonDiv.appendChild(name);
+  pokemonDiv.appendChild(frontImg);
+  pokemonDiv.appendChild(backImg);
+  document.getElementById("pokemonPreviewList")!.appendChild(pokemonDiv);
+  pokemonDiv.addEventListener("click", (e)=>{
+    const target = e.target as HTMLElement;
+    let nameToFetch: string;
+    if(target.id){
+    nameToFetch = target.firstChild!.textContent!;
+    }else{
+      nameToFetch = target.parentElement!.firstChild!.textContent!
+    }
+    fetchAPI(nameToFetch!);
+  })
+}
 
 load();
