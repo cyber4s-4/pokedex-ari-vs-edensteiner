@@ -33,6 +33,10 @@ body {
       text-align: center;
     }
   }
+  #loadingScreen{
+    display: flex;
+    flex-direction: column;
+  }
   #pokemonPreviewList{
     display: flex;
     flex-wrap: wrap;

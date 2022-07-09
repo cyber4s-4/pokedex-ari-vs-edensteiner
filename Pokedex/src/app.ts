@@ -86,11 +86,11 @@ function clearPage() {
 function load() {
   console.log("loaded");
   document.getElementById("loading")!.remove();
+  document.getElementById("loadingImg")!.remove();
   const searchBar = document.getElementById("searchBar") as HTMLInputElement;
   const searchButton = document.getElementById(
     "searchButton"
   ) as HTMLButtonElement;
-  searchButton!.innerHTML = "<i class='fa'>&#xf002;</i>";
   searchButton!.onclick = () => {
     fetchAPI(searchBar!.value);
     searchBar.value = "";
@@ -210,6 +210,11 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
 
 let loading = document.createElement("p");
 loading.innerHTML = "The site is loading, please wait..."
+loading.setAttribute("style", "text-align: center");
 loading.setAttribute("id", "loading");
-document.getElementById("search-div")!.appendChild(loading);
-setTimeout(load, 5000);
+let loadingImg = document.createElement("img");
+loadingImg.setAttribute("id", "loadingImg");
+loadingImg.setAttribute("src", "./loading.gif");
+document.getElementById("loadingScreen")!.appendChild(loading);
+document.getElementById("loadingScreen")!.appendChild(loadingImg);
+setTimeout(load, 30000);
