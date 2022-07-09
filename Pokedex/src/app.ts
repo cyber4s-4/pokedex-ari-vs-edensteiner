@@ -5,6 +5,10 @@ async function fetchAPI(pokemon: string) {
       `http://localhost:3000/${pokemon.toLowerCase()}/`
     );
     if (response.status == 404 || pokemon === "#") {
+<<<<<<< HEAD
+=======
+      // error
+>>>>>>> 1d9e7be3a3eb229d3623f267f4ea45c0dd280bf5
       throw "No pokemon matched your search!";
     }
     let json = await response.json();
