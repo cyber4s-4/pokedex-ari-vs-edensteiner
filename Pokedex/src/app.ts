@@ -2,7 +2,7 @@ async function fetchAPI(pokemon: string) {
   clearSearch();
   try {
     let response = await fetch(
-      `http://localhost:3000/${pokemon.toLowerCase()}/`
+      `http://localhost:3000/pokemon/${pokemon.toLowerCase()}/`
     );
     if (response.status == 404 || pokemon === "#") {
       // error
@@ -133,7 +133,7 @@ class Pokemon {
 async function getPokemons(n: number, x: number) {
   let pokemonData: Pokemon[] = [];
   for (let i = x; i <= n; i++) {
-    let response = await fetch(`http://localhost:3000/${i - 1}`);
+    let response = await fetch(`http://localhost:3000/pokemon/${i - 1}`);
     let json = await response.json();
     let data = {
       //name
@@ -214,4 +214,14 @@ loadingImg.setAttribute("id", "loadingImg");
 loadingImg.setAttribute("src", "./loading.gif");
 document.getElementById("loadingScreen")!.appendChild(loading);
 document.getElementById("loadingScreen")!.appendChild(loadingImg);
-setTimeout(load, 15000);
+loadWebsite();
+
+async function loadWebsite() {
+  let response = await fetch("http://localhost:3000/check");
+  let serverDataIsLoaded = await response.json();
+  if (!serverDataIsLoaded) {
+    setTimeout(loadWebsite, 1000);
+  } else {
+    load();
+  }
+}

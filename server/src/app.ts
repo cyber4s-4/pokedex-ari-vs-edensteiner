@@ -55,7 +55,7 @@ async function getPokemons(n: number, x: number) {
             }`
         ),
       height: json.height,
-      weight: json.weight
+      weight: json.weight,
     };
     const pokemon = new Pokemon(data);
     pokemonData.push(pokemon);
@@ -81,8 +81,13 @@ app.get("/", (req: Request, res: Response) => {
   res.send("it works");
 });
 
-app.get("/:id", (req: Request, res: Response) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:4000")
+app.get("/check", (req: Request, res: Response) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4000");
+  res.send(fs.existsSync(filePath));
+});
+
+app.get("/pokemon/:id", (req: Request, res: Response) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4000");
   const id = req.params.id;
   const pokemon = isNaN(Number(id))
     ? pokemonData.find((pokemon) => pokemon.data.name == id)
