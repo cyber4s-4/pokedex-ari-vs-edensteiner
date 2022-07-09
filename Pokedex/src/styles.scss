@@ -33,4 +33,35 @@ body {
       text-align: center;
     }
   }
+  #loadingScreen {
+    display: flex;
+    flex-direction: column;
+  }
+  #pokemonPreviewList {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .pokemonPreview {
+    background-color: lightblue;
+    border-radius: 50px;
+    margin: 10px;
+    border-color: black;
+    border-width: 2px;
+    border-style: solid;
+    h3 {
+      text-align: center;
+    }
+  }
+  #pageButtons {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    left: 50%;
+    bottom: 10px;
+    transform: translate(-50%, -50%);
+    margin: 0 auto;
+  }
+  .currentPage {
+    color: blue;
+  }
 }
