@@ -15,6 +15,8 @@ interface Data {
   abilities: string[];
   types: string[];
   stats: string[];
+  height: string;
+  weight: string;
 }
 
 //class for pokemon
@@ -52,6 +54,8 @@ async function getPokemons(n: number, x: number) {
               json.stats.find((obj) => obj.stat.name === stat.name).base_stat
             }`
         ),
+      height: json.height,
+      weight: json.weight
     };
     const pokemon = new Pokemon(data);
     pokemonData.push(pokemon);
@@ -59,15 +63,17 @@ async function getPokemons(n: number, x: number) {
   return pokemonData;
 }
 const filePath: string = path.join(__dirname, "../data/data.json");
-const pokemonData: Pokemon[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
+let pokemonData: Pokemon[];
 
 if (fs.existsSync(filePath)) {
   // path exists
   console.log("data.json exists ");
+  pokemonData = JSON.parse(fs.readFileSync(filePath, "utf8"));
 } else {
   (async () => {
-    fs.writeFileSync(filePath, JSON.stringify(await getPokemons(120, 1)));
+    fs.appendFileSync(filePath, JSON.stringify(await getPokemons(120, 1)));
     console.log("data.json has been created");
+    pokemonData = JSON.parse(fs.readFileSync(filePath, "utf8"));
   })();
 }
 
@@ -76,8 +82,12 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.get("/:id", (req: Request, res: Response) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4000")
   const id = req.params.id;
-  res.send(pokemonData[id]);
+  const pokemon = isNaN(Number(id))
+    ? pokemonData.find((pokemon) => pokemon.data.name == id)
+    : pokemonData[id];
+  res.send(pokemon);
 });
 
 app.listen(3000);

@@ -2,7 +2,7 @@ async function fetchAPI(pokemon: string) {
   clearSearch();
   try {
     let response = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}/`
+      `http://localhost:3000/${pokemon.toLowerCase()}/`
     );
     if (response.status == 404 || pokemon === "#") {
       //hide
@@ -19,45 +19,43 @@ async function fetchAPI(pokemon: string) {
     pokemonDiv.style.display = "";
     //name
     const name = document.getElementById("name");
-    name!.innerHTML = `${json.name
+    name!.innerHTML = `${json.data.name
       .charAt(0)
-      .toUpperCase()}${json.name.substring(1)}`;
+      .toUpperCase()}${json.data.name.substring(1)}`;
     //front image
     const frontImg = document.getElementById("frontImg");
-    frontImg!.setAttribute("src", json.sprites.front_default);
+    frontImg!.setAttribute("src", json.data.front_image);
     //back image
     const backImg = document.getElementById("backImg");
-    backImg!.setAttribute("src", json.sprites.back_default);
+    backImg!.setAttribute("src", json.data.back_image);
     //abilities
     const abilityList = document.getElementById("abilitiesList");
     abilityList!.innerHTML = "Abilities: ";
-    for (let eachAbility of json.abilities) {
+    for (let eachAbility of json.data.abilities) {
       const ability = document.createElement("li");
-      ability.innerHTML = eachAbility.ability.name;
+      ability.innerHTML = eachAbility;
       abilityList!.appendChild(ability);
     }
     //types
     const typesList = document.getElementById("typesList");
     typesList!.innerHTML = "Types: ";
-    for (let eachType of json.types) {
+    for (let eachType of json.data.types) {
       const type = document.createElement("li");
-      type.innerHTML = eachType.type.name;
+      type.innerHTML = eachType;
       typesList!.appendChild(type);
     }
     //height
     const height = document.getElementById("height");
-    height!.innerHTML = "Height: " + json.height;
+    height!.innerHTML = "Height: " + json.data.height;
     //weight
     const weight = document.getElementById("weight");
-    weight!.innerHTML = "Weight: " + json.weight;
+    weight!.innerHTML = "Weight: " + json.data.weight;
     //stats
     const statsList = document.getElementById("statsList");
     statsList!.innerHTML = "Stats: ";
-    for (let stat of json.stats) {
+    for (let stat of json.data.stats) {
       const statItem = document.createElement("li");
-      const statValue = stat.base_stat;
-      const statName = stat.stat.name;
-      statItem.innerHTML = statName + ": " + statValue;
+      statItem.innerHTML = stat;
       statsList!.appendChild(statItem);
     }
   } catch (error) {
@@ -86,6 +84,8 @@ function clearPage() {
 }
 
 function load() {
+  console.log("loaded");
+  document.getElementById("loading")!.remove();
   const searchBar = document.getElementById("searchBar") as HTMLInputElement;
   const searchButton = document.getElementById(
     "searchButton"
@@ -120,6 +120,8 @@ interface Data {
   abilities: string[];
   types: string[];
   stats: string[];
+  height: string;
+  weight: string;
 }
 
 //class for pokemon
@@ -134,29 +136,23 @@ class Pokemon {
 async function getPokemons(n: number, x: number) {
   let pokemonData: Pokemon[] = [];
   for (let i = x; i <= n; i++) {
-    let response = await fetch(`https://pokeapi.co/api/v2/pokemon/${i}/`);
+    let response = await fetch(`http://localhost:3000/${i-1}`);
     let json = await response.json();
     let data = {
       //name
-      name: json.name,
+      name: json.data.name,
       //front image
-      front_image: json.sprites.front_default,
+      front_image: json.data.front_image,
       //back image
-      back_image: json.sprites.back_default,
+      back_image: json.data.back_image,
       //abilites array
-      abilities: json.abilities
-        .map((arr) => arr.ability)
-        .map((ability) => ability.name),
+      abilities: json.data.abilities,
       //types array
-      types: json.types.map((arr) => arr.type).map((type) => type.name),
+      types: json.data.types,
       //stats array
-      stats: json.stats
-        .map((arr) => arr.stat)
-        .map(
-          (stat) =>
-            `${stat.name}: ${json.stats.find((obj) => obj.stat.name === stat.name).base_stat
-            }`
-        ),
+      stats: json.data.stats,
+      height: json.height,
+      weight: json.weight
     };
     const pokemon = new Pokemon(data);
     pokemonData.push(pokemon);
@@ -212,4 +208,8 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   })
 }
 
-load();
+let loading = document.createElement("p");
+loading.innerHTML = "The site is loading, please wait..."
+loading.setAttribute("id", "loading");
+document.getElementById("search-div")!.appendChild(loading);
+setTimeout(load, 5000);
