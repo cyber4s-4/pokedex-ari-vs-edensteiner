@@ -5,11 +5,6 @@ async function fetchAPI(pokemon: string) {
       `http://localhost:3000/${pokemon.toLowerCase()}/`
     );
     if (response.status == 404 || pokemon === "#") {
-      //hide
-      const pokemonDiv = document.getElementById(
-        "pokemon-div"
-      ) as HTMLDivElement;
-      pokemonDiv.style.display = "none";
       // error
       throw "No pokemon matched your search!";
     }
@@ -59,6 +54,8 @@ async function fetchAPI(pokemon: string) {
       statsList!.appendChild(statItem);
     }
   } catch (error) {
+    const pokemonDiv = document.getElementById("pokemon-div") as HTMLDivElement;
+    pokemonDiv.style.display = "none";
     alert("No pokemon matched your search!");
   }
 }
@@ -77,8 +74,8 @@ function clearSearch() {
 function clearPage() {
   const previewDiv = document.getElementById("pokemonPreviewList");
   previewDiv!.innerHTML = "";
-  for(let i=1; i<=5; i++){
-    const pageButton = document.getElementById("page"+i);
+  for (let i = 1; i <= 5; i++) {
+    const pageButton = document.getElementById("page" + i);
     pageButton!.classList.remove("currentPage");
   }
 }
@@ -101,8 +98,8 @@ function load() {
       searchBar.value = "";
     }
   };
-  for(let i=1; i<=5; i++){
-    const pageButton = document.getElementById("page"+i);
+  for (let i = 1; i <= 5; i++) {
+    const pageButton = document.getElementById("page" + i);
     pageButton!.addEventListener("click", () => {
       getPage(i);
       pageButton!.classList.add("currentPage");
@@ -136,7 +133,7 @@ class Pokemon {
 async function getPokemons(n: number, x: number) {
   let pokemonData: Pokemon[] = [];
   for (let i = x; i <= n; i++) {
-    let response = await fetch(`http://localhost:3000/${i-1}`);
+    let response = await fetch(`http://localhost:3000/${i - 1}`);
     let json = await response.json();
     let data = {
       //name
@@ -152,7 +149,7 @@ async function getPokemons(n: number, x: number) {
       //stats array
       stats: json.data.stats,
       height: json.height,
-      weight: json.weight
+      weight: json.weight,
     };
     const pokemon = new Pokemon(data);
     pokemonData.push(pokemon);
@@ -168,7 +165,7 @@ async function getPage(page: number) {
   const firstPokemonId = lastPokemonId - 23;
   const pokemons = await getPokemons(lastPokemonId, firstPokemonId);
   for (let pokemon of pokemons) {
-    const count = pokemons.indexOf(pokemon)
+    const count = pokemons.indexOf(pokemon);
     buildPokemon(pokemon, count);
   }
 }
@@ -177,7 +174,7 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //new pokemon div
   const pokemonDiv = document.createElement("div");
   pokemonDiv.classList.add("pokemonPreview");
-  pokemonDiv.setAttribute("id", "preview"+count);
+  pokemonDiv.setAttribute("id", "preview" + count);
   //name
   const name = document.createElement("h3");
   // name.setAttribute("id", pokemon.data.name);
@@ -196,20 +193,20 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   pokemonDiv.appendChild(frontImg);
   pokemonDiv.appendChild(backImg);
   document.getElementById("pokemonPreviewList")!.appendChild(pokemonDiv);
-  pokemonDiv.addEventListener("click", (e)=>{
+  pokemonDiv.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
     let nameToFetch: string;
-    if(target.id){
-    nameToFetch = target.firstChild!.textContent!;
-    }else{
-      nameToFetch = target.parentElement!.firstChild!.textContent!
+    if (target.id) {
+      nameToFetch = target.firstChild!.textContent!;
+    } else {
+      nameToFetch = target.parentElement!.firstChild!.textContent!;
     }
     fetchAPI(nameToFetch!);
-  })
+  });
 }
 
 let loading = document.createElement("p");
-loading.innerHTML = "The site is loading, please wait..."
+loading.innerHTML = "The site is loading, please wait...";
 loading.setAttribute("style", "text-align: center");
 loading.setAttribute("id", "loading");
 let loadingImg = document.createElement("img");
@@ -217,4 +214,4 @@ loadingImg.setAttribute("id", "loadingImg");
 loadingImg.setAttribute("src", "./loading.gif");
 document.getElementById("loadingScreen")!.appendChild(loading);
 document.getElementById("loadingScreen")!.appendChild(loadingImg);
-setTimeout(load, 30000);
+setTimeout(load, 15000);
