@@ -1,8 +1,9 @@
-async function fetchAPI(pokemon: string) {
+// get pokemon from server by search
+async function fetchFromServer(pokemon: string) {
   clearSearch();
   try {
     let response = await fetch(
-      `http://localhost:3000/${pokemon.toLowerCase()}/`
+      `http://localhost:3000/pokemon/${pokemon.toLowerCase()}/`
     );
     if (response.status == 404 || pokemon === "#") {
       // error
@@ -53,6 +54,7 @@ async function fetchAPI(pokemon: string) {
       statItem.innerHTML = stat;
       statsList!.appendChild(statItem);
     }
+  //handle error
   } catch (error) {
     const pokemonDiv = document.getElementById("pokemon-div") as HTMLDivElement;
     pokemonDiv.style.display = "none";
@@ -60,6 +62,7 @@ async function fetchAPI(pokemon: string) {
   }
 }
 
+//clear search result
 function clearSearch() {
   let htmlToClear = document.getElementsByClassName("innerHTML");
   for (let element of htmlToClear) {
@@ -71,6 +74,7 @@ function clearSearch() {
   }
 }
 
+//clear preview page
 function clearPage() {
   const previewDiv = document.getElementById("pokemonPreviewList");
   previewDiv!.innerHTML = "";
@@ -80,6 +84,7 @@ function clearPage() {
   }
 }
 
+//load pokemons on page
 function load() {
   console.log("loaded");
   document.getElementById("loading")!.remove();
@@ -89,12 +94,12 @@ function load() {
     "searchButton"
   ) as HTMLButtonElement;
   searchButton!.onclick = () => {
-    fetchAPI(searchBar!.value);
+    fetchFromServer(searchBar!.value);
     searchBar.value = "";
   };
   window!.onkeydown = (e) => {
     if (e.key === "Enter" && searchBar.value.length > 0) {
-      fetchAPI(searchBar.value);
+      fetchFromServer(searchBar.value);
       searchBar.value = "";
     }
   };
@@ -130,10 +135,10 @@ class Pokemon {
 }
 
 //gets N pokemons
-async function getPokemons(n: number, x: number) {
+async function getPokemons(x: number, n: number) {
   let pokemonData: Pokemon[] = [];
   for (let i = x; i <= n; i++) {
-    let response = await fetch(`http://localhost:3000/${i - 1}`);
+    let response = await fetch(`http://localhost:3000/pokemon/${i - 1}`);
     let json = await response.json();
     let data = {
       //name
@@ -156,14 +161,11 @@ async function getPokemons(n: number, x: number) {
   }
   return pokemonData;
 }
-// console logs first 100 pokemons
-// getPokemons(100, 1).then((data) => console.log(data));
-
 async function getPage(page: number) {
   clearPage();
   const lastPokemonId = page * 24;
   const firstPokemonId = lastPokemonId - 23;
-  const pokemons = await getPokemons(lastPokemonId, firstPokemonId);
+  const pokemons = await getPokemons(firstPokemonId, lastPokemonId);
   for (let pokemon of pokemons) {
     const count = pokemons.indexOf(pokemon);
     buildPokemon(pokemon, count);
@@ -187,12 +189,12 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //back image
   const backImg = document.createElement("img");
   backImg!.setAttribute("src", pokemon.data.back_image);
-  //setting onclick
   //appending
   pokemonDiv.appendChild(name);
   pokemonDiv.appendChild(frontImg);
   pokemonDiv.appendChild(backImg);
   document.getElementById("pokemonPreviewList")!.appendChild(pokemonDiv);
+  //setting onclick
   pokemonDiv.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
     let nameToFetch: string;
@@ -201,10 +203,10 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
     } else {
       nameToFetch = target.parentElement!.firstChild!.textContent!;
     }
-    fetchAPI(nameToFetch!);
+    fetchFromServer(nameToFetch!);
   });
 }
-
+// loading screen
 let loading = document.createElement("p");
 loading.innerHTML = "The site is loading, please wait...";
 loading.setAttribute("style", "text-align: center");
@@ -214,4 +216,16 @@ loadingImg.setAttribute("id", "loadingImg");
 loadingImg.setAttribute("src", "./loading.gif");
 document.getElementById("loadingScreen")!.appendChild(loading);
 document.getElementById("loadingScreen")!.appendChild(loadingImg);
-setTimeout(load, 15000);
+// start website
+loadWebsite();
+
+// checks if data is loaded on server, while false keep checking. when true load website
+async function loadWebsite() {
+  let response = await fetch("http://localhost:3000/check");
+  let serverDataIsLoaded = await response.json();
+  if (!serverDataIsLoaded) {
+    setTimeout(loadWebsite, 1000);
+  } else {
+    load();
+  }
+}
