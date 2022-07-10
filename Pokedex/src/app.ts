@@ -54,6 +54,7 @@ async function fetchFromServer(pokemon: string) {
       statItem.innerHTML = stat;
       statsList!.appendChild(statItem);
     }
+  //handle error
   } catch (error) {
     const pokemonDiv = document.getElementById("pokemon-div") as HTMLDivElement;
     pokemonDiv.style.display = "none";
@@ -61,6 +62,7 @@ async function fetchFromServer(pokemon: string) {
   }
 }
 
+//clear search result
 function clearSearch() {
   let htmlToClear = document.getElementsByClassName("innerHTML");
   for (let element of htmlToClear) {
@@ -72,6 +74,7 @@ function clearSearch() {
   }
 }
 
+//clear preview page
 function clearPage() {
   const previewDiv = document.getElementById("pokemonPreviewList");
   previewDiv!.innerHTML = "";
@@ -186,12 +189,12 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //back image
   const backImg = document.createElement("img");
   backImg!.setAttribute("src", pokemon.data.back_image);
-  //setting onclick
   //appending
   pokemonDiv.appendChild(name);
   pokemonDiv.appendChild(frontImg);
   pokemonDiv.appendChild(backImg);
   document.getElementById("pokemonPreviewList")!.appendChild(pokemonDiv);
+  //setting onclick
   pokemonDiv.addEventListener("click", (e) => {
     const target = e.target as HTMLElement;
     let nameToFetch: string;
