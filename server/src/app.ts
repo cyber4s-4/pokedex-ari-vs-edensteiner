@@ -35,7 +35,7 @@ app.get("/", (req: Request, res: Response) => {
   res.send("it works");
 });
 
-// checks if data arrived on server from fetch
+// return amount of pokemons
 app.get("/pokemonCount", (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:4000");
   res.send(String(pokemonData.length));
@@ -48,6 +48,8 @@ app.get("/pokemon/:id", (req: Request, res: Response) => {
   const pokemon = isNaN(Number(id))
     ? pokemonData.find((pokemon) => pokemon.data.name == id)
     : pokemonData[id];
+  if(!pokemon.data.front_image) pokemon.data.front_image = "./noImage.png";
+  if(!pokemon.data.back_image) pokemon.data.back_image = "./noImage.png";
   res.send(pokemon);
 });
 

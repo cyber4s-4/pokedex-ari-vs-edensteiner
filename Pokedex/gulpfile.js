@@ -28,7 +28,7 @@ gulp.task('scss', () => {
 
 // Transfers index
 gulp.task('index', () => {
-  return gulp.src(['./src/index.html', './src/favicon.ico', './src/loading.gif'])
+  return gulp.src(['./src/index.html', './src/favicon.ico', './src/loading.gif', './src/noImage.png'])
     .pipe(gulp.dest('./dist'));
 });
 

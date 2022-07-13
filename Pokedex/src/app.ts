@@ -20,10 +20,12 @@ async function fetchFromServer(pokemon: string) {
       .toUpperCase()}${json.data.name.substring(1)}`;
     //front image
     const frontImg = document.getElementById("frontImg");
-    frontImg!.setAttribute("src", json.data.front_image);
+    const frontImageAttribute = json.data.front_image;
+    frontImg!.setAttribute("src", frontImageAttribute);
     //back image
     const backImg = document.getElementById("backImg");
-    backImg!.setAttribute("src", json.data.back_image);
+    const backImageAttribute = json.data.back_image;
+    backImg!.setAttribute("src", backImageAttribute);
     //abilities
     const abilityList = document.getElementById("abilitiesList");
     abilityList!.innerHTML = "Abilities: ";
@@ -54,7 +56,7 @@ async function fetchFromServer(pokemon: string) {
       statItem.innerHTML = stat;
       statsList!.appendChild(statItem);
     }
-  //handle error
+    //handle error
   } catch (error) {
     const pokemonDiv = document.getElementById("pokemon-div") as HTMLDivElement;
     pokemonDiv.style.display = "none";
@@ -75,18 +77,32 @@ function clearSearch() {
 }
 
 //clear preview page
-function clearPage() {
+async function clearPage() {
   const previewDiv = document.getElementById("pokemonPreviewList");
   previewDiv!.innerHTML = "";
-  for (let i = 1; i <= 5; i++) {
-    const pageButton = document.getElementById("page" + i);
-    pageButton!.classList.remove("currentPage");
+  for (let i = 1; i <= 3; i++) {
+    let pageButton;
+    if (i == 1) {
+      pageButton = document.getElementById("firstButton")!.firstChild;
+      pageButton!.classList.remove("currentPage");
+    }
+    if (i == 2) {
+      pageButton = document.getElementById("lastButton")!.firstChild;
+      pageButton!.classList.remove("currentPage");
+    }
+    if (i == 3) {
+      for (let x = 0; x <= 4; x++) {
+        pageButton = document.getElementsByClassName("button" + x) as HTMLCollection;
+        for (let button of pageButton) {
+          button.classList.remove("currentPage");
+        }
+      }
+    }
   }
 }
 
 //load pokemons on page
-function load() {
-  console.log("loaded");
+async function load() {
   document.getElementById("loading")!.remove();
   document.getElementById("loadingImg")!.remove();
   const searchBar = document.getElementById("searchBar") as HTMLInputElement;
@@ -103,15 +119,43 @@ function load() {
       searchBar.value = "";
     }
   };
-  for (let i = 1; i <= 5; i++) {
-    const pageButton = document.getElementById("page" + i);
-    pageButton!.addEventListener("click", () => {
-      getPage(i);
-      pageButton!.classList.add("currentPage");
+  let response = await fetch("http://localhost:3000/pokemonCount");
+  let pokemonLength = await response.json();
+  let pageCount = Math.ceil(Number(pokemonLength) / 24);
+  for (let i = 1; i <= 2; i++) {
+    let page: number;
+    if (i == 1) page = 1;
+    if (i == 2) page = pageCount;
+    let pageButton = document.createElement("button");
+    pageButton.innerHTML = page!.toString();
+    let pageId = "page" + page!;
+    pageButton.setAttribute("id", pageId);
+    pageButton.addEventListener("click", () => {
+      getPage(page);
     });
+    if (i == 1) {
+      document.getElementById("firstButton")!.appendChild(pageButton);
+    } else if (i == 2) {
+      document.getElementById("lastButton")!.appendChild(pageButton);
+    }
   }
+  // getButtons(2, 6);
   getPage(1);
   document.getElementById("page1")!.classList.add("currentPage");
+}
+
+function getButtons(first: number, last: number) {
+  document.getElementById("dynamicButtons")!.innerHTML = "";
+  for (let i = first; i <= last; i++) {
+    let pageButton = document.createElement("button");
+    pageButton.innerHTML = i.toString();
+    pageButton.classList.add("button" + (i - first))
+    pageButton.setAttribute("id", "page" + i);
+    pageButton.addEventListener("click", () => {
+      getPage(i);
+    });
+    document.getElementById("dynamicButtons")!.appendChild(pageButton);
+  };
 }
 
 //interface for pokemon data
@@ -161,15 +205,37 @@ async function getPokemons(x: number, n: number) {
   }
   return pokemonData;
 }
+
 async function getPage(page: number) {
+  let response = await fetch("http://localhost:3000/pokemonCount");
+  let pokemonLength = await response.json();
+  let pageCount = Math.ceil(pokemonLength / 24)
   clearPage();
-  const lastPokemonId = page * 24;
+  let lastPokemonId = page * 24;
   const firstPokemonId = lastPokemonId - 23;
+  if (lastPokemonId > pokemonLength) lastPokemonId = pokemonLength
   const pokemons = await getPokemons(firstPokemonId, lastPokemonId);
   for (let pokemon of pokemons) {
     const count = pokemons.indexOf(pokemon);
     buildPokemon(pokemon, count);
   }
+  if (page < 4) {
+    getButtons(2, 6);
+    let current = document.getElementById("page"+page);
+    current!.classList.add("currentPage");
+  }
+  else if (page > pageCount - 3) {
+    getButtons(pageCount - 5, pageCount - 1);
+    let current = document.getElementById("page"+page);
+    current!.classList.add("currentPage");
+  }
+  else {
+    getButtons(page - 2, page + 2);
+    let current = document.getElementsByClassName("button2");
+    for(let currentPage of current){
+      currentPage.classList.add("currentPage");
+    }
+}
 }
 
 function buildPokemon(this: any, pokemon: Pokemon, count: number) {
@@ -221,7 +287,7 @@ loadWebsite();
 
 // checks if data is loaded on server, while false keep checking. when true load website
 async function loadWebsite() {
-  let response = await fetch("http://localhost:3000/check");
+  let response = await fetch("http://localhost:3000/pokemonCount");
   let serverDataIsLoaded = await response.json();
   if (!serverDataIsLoaded) {
     setTimeout(loadWebsite, 1000);
