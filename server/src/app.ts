@@ -63,20 +63,7 @@ async function getPokemons(x: number, n: number) {
   return pokemonData;
 }
 const filePath: string = path.join(__dirname, "../data/data.json");
-let pokemonData: Pokemon[];
-
-// fetch pokemons from API and create data.json with pokemon data if data.json file doesn't exists.
-if (fs.existsSync(filePath)) {
-  // path exists
-  console.log("data.json exists ");
-  pokemonData = JSON.parse(fs.readFileSync(filePath, "utf8"));
-} else {
-  (async () => {
-    fs.appendFileSync(filePath, JSON.stringify(await getPokemons(1, 120)));
-    console.log("data.json has been created");
-    pokemonData = JSON.parse(fs.readFileSync(filePath, "utf8"));
-  })();
-}
+let pokemonData: Pokemon[] = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
 // checks server is running
 app.get("/", (req: Request, res: Response) => {
@@ -84,9 +71,9 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 // checks if data arrived on server from fetch
-app.get("/check", (req: Request, res: Response) => {
+app.get("/pokemonCount", (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:4000");
-  res.send(fs.existsSync(filePath));
+  res.send(String(pokemonData.length));
 });
 
 // send pokemon by id or name to client
