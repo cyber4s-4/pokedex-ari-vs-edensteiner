@@ -1,3 +1,5 @@
+let loadingPage = 0;
+
 // get pokemon from server by search
 async function fetchFromServer(pokemon: string) {
   clearSearch();
@@ -139,7 +141,6 @@ async function load() {
       document.getElementById("lastButton")!.appendChild(pageButton);
     }
   }
-  // getButtons(2, 6);
   getPage(1);
   document.getElementById("page1")!.classList.add("currentPage");
 }
@@ -156,6 +157,7 @@ function getButtons(first: number, last: number) {
     });
     document.getElementById("dynamicButtons")!.appendChild(pageButton);
   };
+  loadingPage = 0;
 }
 
 //interface for pokemon data
@@ -207,6 +209,11 @@ async function getPokemons(x: number, n: number) {
 }
 
 async function getPage(page: number) {
+  let newLoad = 0
+  if(loadingPage == 0){
+  loadingPage = 1;
+  newLoad = 1}
+  if(newLoad == 1){
   let response = await fetch("http://localhost:3000/pokemonCount");
   let pokemonLength = await response.json();
   let pageCount = Math.ceil(pokemonLength / 24)
@@ -236,7 +243,7 @@ async function getPage(page: number) {
       currentPage.classList.add("currentPage");
     }
 }
-}
+}}
 
 function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //new pokemon div
