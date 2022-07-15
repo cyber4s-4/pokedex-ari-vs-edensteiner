@@ -17,3 +17,7 @@ export class Pokemon {
     this.data = data;
   }
 }
+
+export function fuseNames(firstName: string, secondName: string): string {
+  return firstName.substring(0, firstName.length / 2) + secondName.substring(secondName.length / 2, secondName.length);
+}

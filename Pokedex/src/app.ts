@@ -250,12 +250,12 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   name.innerHTML = `${pokemon.data.name.charAt(0).toUpperCase()}${pokemon.data.name.substring(1)}`;
   //front image
   const frontImg = document.createElement("img");
-  const fImg = pokemon.data.front_image || "./noImage.png";
-  frontImg.setAttribute("src", fImg);
+  const frontImageAttribute = pokemon.data.front_image || "./noImage.png";
+  frontImg.setAttribute("src", frontImageAttribute);
   //back image
   const backImg = document.createElement("img");
-  const bImg = pokemon.data.back_image || "./noImage.png";
-  backImg!.setAttribute("src", bImg);
+  const backImageAttribute = pokemon.data.back_image || "./noImage.png";
+  backImg!.setAttribute("src", backImageAttribute);
   //appending
   pokemonDiv.appendChild(name);
   pokemonDiv.appendChild(frontImg);
