@@ -13,25 +13,6 @@ app.use(cors());
 
 let collection: Collection;
 connect(create()).then((res) => (collection = res));
-//interface for pokemon data
-interface Data {
-  name: string;
-  front_image: string;
-  back_image: string;
-  abilities: string[];
-  types: string[];
-  stats: string[];
-  height: string;
-  weight: string;
-}
-
-//class for pokemon
-class Pokemon {
-  data: Data;
-  constructor(data: Data) {
-    this.data = data;
-  }
-}
 
 // checks server is running
 app.get("/", async (req: Request, res: Response) => {
@@ -50,18 +31,11 @@ app.get("/pokemon/:id", async (req: Request, res: Response) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:4000");
   const id = req.params.id;
   let pokemon: any;
-  const pokemonQueryByIndex: boolean = isNaN(Number(id)) ? false : true;
-  if (pokemonQueryByIndex) {
-    const cursor = await collection.find({ index: Number(id) + 1 });
-    const items = await cursor.toArray();
-    pokemon = items[0];
-  } else {
-    const cursor = await collection.find({ "data.name": id });
-    const items = await cursor.toArray();
-    pokemon = items[0];
-  }
-  if (!pokemon.data.front_image) pokemon.data.front_image = "./noImage.png";
-  if (!pokemon.data.back_image) pokemon.data.back_image = "./noImage.png";
+  const cursor = isNaN(Number(id))
+    ? await collection.find({ "data.name": id })
+    : await collection.find({ index: Number(id) });
+  const items = await cursor.toArray();
+  pokemon = items[0];
   res.send(pokemon);
 });
 

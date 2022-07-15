@@ -4,9 +4,7 @@ let loadingPage = 0;
 async function fetchFromServer(pokemon: string) {
   clearSearch();
   try {
-    let response = await fetch(
-      `http://localhost:3000/pokemon/${pokemon.toLowerCase()}/`
-    );
+    let response = await fetch(`http://localhost:3000/pokemon/${pokemon.toLowerCase()}/`);
     if (response.status == 404 || pokemon === "#") {
       // error
       throw "No pokemon matched your search!";
@@ -17,16 +15,14 @@ async function fetchFromServer(pokemon: string) {
     pokemonDiv.style.display = "";
     //name
     const name = document.getElementById("name");
-    name!.innerHTML = `${json.data.name
-      .charAt(0)
-      .toUpperCase()}${json.data.name.substring(1)}`;
+    name!.innerHTML = `${json.data.name.charAt(0).toUpperCase()}${json.data.name.substring(1)}`;
     //front image
     const frontImg = document.getElementById("frontImg");
-    const frontImageAttribute = json.data.front_image;
+    const frontImageAttribute = json.data.front_image || "./noImage.png";
     frontImg!.setAttribute("src", frontImageAttribute);
     //back image
     const backImg = document.getElementById("backImg");
-    const backImageAttribute = json.data.back_image;
+    const backImageAttribute = json.data.back_image || "./noImage.png";
     backImg!.setAttribute("src", backImageAttribute);
     //abilities
     const abilityList = document.getElementById("abilitiesList");
@@ -108,9 +104,7 @@ async function load() {
   document.getElementById("loading")!.remove();
   document.getElementById("loadingImg")!.remove();
   const searchBar = document.getElementById("searchBar") as HTMLInputElement;
-  const searchButton = document.getElementById(
-    "searchButton"
-  ) as HTMLButtonElement;
+  const searchButton = document.getElementById("searchButton") as HTMLButtonElement;
   searchButton!.onclick = () => {
     fetchFromServer(searchBar!.value);
     searchBar.value = "";
@@ -150,13 +144,13 @@ function getButtons(first: number, last: number) {
   for (let i = first; i <= last; i++) {
     let pageButton = document.createElement("button");
     pageButton.innerHTML = i.toString();
-    pageButton.classList.add("button" + (i - first))
+    pageButton.classList.add("button" + (i - first));
     pageButton.setAttribute("id", "page" + i);
     pageButton.addEventListener("click", () => {
       getPage(i);
     });
     document.getElementById("dynamicButtons")!.appendChild(pageButton);
-  };
+  }
   loadingPage = 0;
 }
 
@@ -184,15 +178,15 @@ class Pokemon {
 async function getPokemons(x: number, n: number) {
   let pokemonData: Pokemon[] = [];
   for (let i = x; i <= n; i++) {
-    let response = await fetch(`http://localhost:3000/pokemon/${i - 1}`);
+    let response = await fetch(`http://localhost:3000/pokemon/${i}`);
     let json = await response.json();
     let data = {
       //name
       name: json.data.name,
       //front image
-      front_image: json.data.front_image,
+      front_image: json.data.front_image || "noImage.png",
       //back image
-      back_image: json.data.back_image,
+      back_image: json.data.back_image || "noImage.png",
       //abilites array
       abilities: json.data.abilities,
       //types array
@@ -209,41 +203,41 @@ async function getPokemons(x: number, n: number) {
 }
 
 async function getPage(page: number) {
-  let newLoad = 0
-  if(loadingPage == 0){
-  loadingPage = 1;
-  newLoad = 1}
-  if(newLoad == 1){
-  let response = await fetch("http://localhost:3000/pokemonCount");
-  let pokemonLength = await response.json();
-  let pageCount = Math.ceil(pokemonLength / 24)
-  clearPage();
-  let lastPokemonId = page * 24;
-  const firstPokemonId = lastPokemonId - 23;
-  if (lastPokemonId > pokemonLength) lastPokemonId = pokemonLength
-  const pokemons = await getPokemons(firstPokemonId, lastPokemonId);
-  for (let pokemon of pokemons) {
-    const count = pokemons.indexOf(pokemon);
-    buildPokemon(pokemon, count);
+  let newLoad = 0;
+  if (loadingPage == 0) {
+    loadingPage = 1;
+    newLoad = 1;
   }
-  if (page < 4) {
-    getButtons(2, 6);
-    let current = document.getElementById("page"+page);
-    current!.classList.add("currentPage");
-  }
-  else if (page > pageCount - 3) {
-    getButtons(pageCount - 5, pageCount - 1);
-    let current = document.getElementById("page"+page);
-    current!.classList.add("currentPage");
-  }
-  else {
-    getButtons(page - 2, page + 2);
-    let current = document.getElementsByClassName("button2");
-    for(let currentPage of current){
-      currentPage.classList.add("currentPage");
+  if (newLoad == 1) {
+    let response = await fetch("http://localhost:3000/pokemonCount");
+    let pokemonLength = await response.json();
+    let pageCount = Math.ceil(pokemonLength / 24);
+    clearPage();
+    let lastPokemonId = page * 24;
+    const firstPokemonId = lastPokemonId - 23;
+    if (lastPokemonId > pokemonLength) lastPokemonId = pokemonLength;
+    const pokemons = await getPokemons(firstPokemonId, lastPokemonId);
+    for (let pokemon of pokemons) {
+      const count = pokemons.indexOf(pokemon);
+      buildPokemon(pokemon, count);
     }
+    if (page < 4) {
+      getButtons(2, 6);
+      let current = document.getElementById("page" + page);
+      current!.classList.add("currentPage");
+    } else if (page > pageCount - 3) {
+      getButtons(pageCount - 5, pageCount - 1);
+      let current = document.getElementById("page" + page);
+      current!.classList.add("currentPage");
+    } else {
+      getButtons(page - 2, page + 2);
+      let current = document.getElementsByClassName("button2");
+      for (let currentPage of current) {
+        currentPage.classList.add("currentPage");
+      }
+    }
+  }
 }
-}}
 
 function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //new pokemon div
@@ -253,15 +247,15 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //name
   const name = document.createElement("h3");
   // name.setAttribute("id", pokemon.data.name);
-  name.innerHTML = `${pokemon.data.name
-    .charAt(0)
-    .toUpperCase()}${pokemon.data.name.substring(1)}`;
+  name.innerHTML = `${pokemon.data.name.charAt(0).toUpperCase()}${pokemon.data.name.substring(1)}`;
   //front image
   const frontImg = document.createElement("img");
-  frontImg.setAttribute("src", pokemon.data.front_image);
+  const fImg = pokemon.data.front_image || "./noImage.png";
+  frontImg.setAttribute("src", fImg);
   //back image
   const backImg = document.createElement("img");
-  backImg!.setAttribute("src", pokemon.data.back_image);
+  const bImg = pokemon.data.back_image || "./noImage.png";
+  backImg!.setAttribute("src", bImg);
   //appending
   pokemonDiv.appendChild(name);
   pokemonDiv.appendChild(frontImg);
