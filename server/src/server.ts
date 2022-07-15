@@ -56,5 +56,14 @@ app.get("/preview/:id", async (req: Request, res: Response) => {
   res.send(previewData);
 });
 
+//send page info
+app.get("/page/:number", async (req: Request, res: Response) => {
+  const pageNumber: number = Number(req.params.number);
+  let pokemons: Document[];
+  const cursor: FindCursor = await collection.find({ index: { $gte: 24 * pageNumber - 23, $lte: 24 * pageNumber } });
+  pokemons = await cursor.toArray();
+  res.send(pokemons);
+});
+
 const port = process.env.PORT || 3000;
 app.listen(port);
