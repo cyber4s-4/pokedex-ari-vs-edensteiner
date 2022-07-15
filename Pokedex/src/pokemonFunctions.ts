@@ -74,6 +74,7 @@ function clearSearch() {
   }
 }
 
+//builds a pokemon for the preview page
 export function buildPokemon(pokemon: PreviewData, count: number) {
   //new pokemon div
   const pokemonDiv = document.createElement("div");

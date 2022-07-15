@@ -1,6 +1,6 @@
 import {fetchFromServer, buildPokemon} from "./pokemonFunctions"
-let loadingPage = 0;
-const POKEMONS_PER_PAGE = 24
+let loadingPage = 0; //used to make sure multiples of the same page are not loaded together
+const POKEMONS_PER_PAGE = 24 //number of pokemons on each page
 
 //clear preview page
 async function clearPage() {
@@ -65,6 +65,7 @@ async function load() {
   document.getElementById("page1")!.classList.add("currentPage");
 }
 
+//create page buttons dynamically
 function getButtons(first: number, last: number) {
   document.getElementById("dynamicButtons")!.innerHTML = "";
   for (let i = first; i <= last; i++) {
@@ -80,8 +81,10 @@ function getButtons(first: number, last: number) {
   loadingPage = 0;
 }
 
+//loads a preview page of pokemons
 async function getPage(page: number) {
   let newLoad = 0;
+  //makes sure this does not get executed several times in a row
   if (loadingPage == 0) {
     loadingPage = 1;
     newLoad = 1;
@@ -97,6 +100,7 @@ async function getPage(page: number) {
       const count = pokemons.indexOf(pokemon);
       buildPokemon(pokemon, count);
     }
+    //limits dynamic buttons in case they are at the edge of the page range
     if (page < 4) {
       getButtons(2, 6);
       let current = document.getElementById("page" + page);
