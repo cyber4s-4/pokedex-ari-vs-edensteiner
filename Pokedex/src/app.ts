@@ -217,10 +217,8 @@ async function getPage(page: number) {
     let pokemonLength = await response.json();
     let pageCount = Math.ceil(pokemonLength / 24);
     clearPage();
-    let lastPokemonId = page * 24;
-    const firstPokemonId = lastPokemonId - 23;
-    if (lastPokemonId > pokemonLength) lastPokemonId = pokemonLength;
-    const pokemons = await getPokemons(firstPokemonId, lastPokemonId);
+    const pageRequest = await fetch(`http://localhost:3000/page/${page}`);
+    const pokemons = await pageRequest.json();
     for (let pokemon of pokemons) {
       const count = pokemons.indexOf(pokemon);
       buildPokemon(pokemon, count);
@@ -243,7 +241,8 @@ async function getPage(page: number) {
   }
 }
 
-function buildPokemon(this: any, pokemon: PreviewData, count: number) {
+function buildPokemon(pokemon: PreviewData, count: number) {
+  console.log(pokemon);
   //new pokemon div
   const pokemonDiv = document.createElement("div");
   pokemonDiv.classList.add("pokemonPreview");
