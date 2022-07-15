@@ -60,9 +60,17 @@ app.get("/preview/:id", async (req: Request, res: Response) => {
 app.get("/page/:number", async (req: Request, res: Response) => {
   const pageNumber: number = Number(req.params.number);
   let pokemons: Document[];
+  let previewArray: PreviewData[] = [];
   const cursor: FindCursor = await collection.find({ index: { $gte: 24 * pageNumber - 23, $lte: 24 * pageNumber } });
   pokemons = await cursor.toArray();
-  res.send(pokemons);
+  pokemons.forEach((pokemon) => {
+    previewArray.push({
+      name: pokemon.data.name,
+      front_image: pokemon.data.front_image,
+      back_image: pokemon.data.back_image,
+    });
+  });
+  res.send(previewArray);
 });
 
 const port = process.env.PORT || 3000;

@@ -101,8 +101,6 @@ async function clearPage() {
 
 //load pokemons on page
 async function load() {
-  document.getElementById("loading")!.remove();
-  document.getElementById("loadingImg")!.remove();
   const searchBar = document.getElementById("searchBar") as HTMLInputElement;
   const searchButton = document.getElementById("searchButton") as HTMLButtonElement;
   searchButton!.onclick = () => {
@@ -276,16 +274,7 @@ function buildPokemon(pokemon: PreviewData, count: number) {
     await fetchFromServer(nameToFetch!);
   });
 }
-// loading screen
-let loading = document.createElement("p");
-loading.innerHTML = "The site is loading, please wait...";
-loading.setAttribute("style", "text-align: center");
-loading.setAttribute("id", "loading");
-let loadingImg = document.createElement("img");
-loadingImg.setAttribute("id", "loadingImg");
-loadingImg.setAttribute("src", "./loading.gif");
-document.getElementById("loadingScreen")!.appendChild(loading);
-document.getElementById("loadingScreen")!.appendChild(loadingImg);
+
 // start website
 loadWebsite();
 
