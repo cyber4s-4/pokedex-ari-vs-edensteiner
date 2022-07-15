@@ -174,31 +174,35 @@ class Pokemon {
   }
 }
 
+// interface for preview data
+interface PreviewData {
+  name: string;
+  front_image: string;
+  back_image: string;
+}
+
 //gets N pokemons
 async function getPokemons(x: number, n: number) {
-  let pokemonData: Pokemon[] = [];
+  const pokemonData: PreviewData[] = [];
+  const promises: Promise<void>[] = [];
   for (let i = x; i <= n; i++) {
-    let response = await fetch(`http://localhost:3000/pokemon/${i}`);
-    let json = await response.json();
-    let data = {
-      //name
-      name: json.data.name,
-      //front image
-      front_image: json.data.front_image || "noImage.png",
-      //back image
-      back_image: json.data.back_image || "noImage.png",
-      //abilites array
-      abilities: json.data.abilities,
-      //types array
-      types: json.data.types,
-      //stats array
-      stats: json.data.stats,
-      height: json.height,
-      weight: json.weight,
-    };
-    const pokemon = new Pokemon(data);
-    pokemonData.push(pokemon);
+    promises.push(
+      (async (): Promise<void> => {
+        let response = await fetch(`http://localhost:3000/preview/${i}`);
+        let json = await response.json();
+        let PreviewData = {
+          //name
+          name: json.name,
+          //front image
+          front_image: json.front_image,
+          //back image
+          back_image: json.back_image,
+        };
+        pokemonData.push(PreviewData);
+      })()
+    );
   }
+  await Promise.all(promises);
   return pokemonData;
 }
 
@@ -239,7 +243,7 @@ async function getPage(page: number) {
   }
 }
 
-function buildPokemon(this: any, pokemon: Pokemon, count: number) {
+function buildPokemon(this: any, pokemon: PreviewData, count: number) {
   //new pokemon div
   const pokemonDiv = document.createElement("div");
   pokemonDiv.classList.add("pokemonPreview");
@@ -247,14 +251,14 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   //name
   const name = document.createElement("h3");
   // name.setAttribute("id", pokemon.data.name);
-  name.innerHTML = `${pokemon.data.name.charAt(0).toUpperCase()}${pokemon.data.name.substring(1)}`;
+  name.innerHTML = `${pokemon.name.charAt(0).toUpperCase()}${pokemon.name.substring(1)}`;
   //front image
   const frontImg = document.createElement("img");
-  const frontImageAttribute = pokemon.data.front_image || "./noImage.png";
+  const frontImageAttribute = pokemon.front_image || "./noImage.png";
   frontImg.setAttribute("src", frontImageAttribute);
   //back image
   const backImg = document.createElement("img");
-  const backImageAttribute = pokemon.data.back_image || "./noImage.png";
+  const backImageAttribute = pokemon.back_image || "./noImage.png";
   backImg!.setAttribute("src", backImageAttribute);
   //appending
   pokemonDiv.appendChild(name);
@@ -262,7 +266,7 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
   pokemonDiv.appendChild(backImg);
   document.getElementById("pokemonPreviewList")!.appendChild(pokemonDiv);
   //setting onclick
-  pokemonDiv.addEventListener("click", (e) => {
+  pokemonDiv.addEventListener("click", async (e) => {
     const target = e.target as HTMLElement;
     let nameToFetch: string;
     if (target.id) {
@@ -270,7 +274,7 @@ function buildPokemon(this: any, pokemon: Pokemon, count: number) {
     } else {
       nameToFetch = target.parentElement!.firstChild!.textContent!;
     }
-    fetchFromServer(nameToFetch!);
+    await fetchFromServer(nameToFetch!);
   });
 }
 // loading screen
