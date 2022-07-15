@@ -1,6 +1,6 @@
-import {fetchFromServer, buildPokemon} from "./pokemonFunctions"
+import { fetchFromServer, buildPokemon, clearSearch } from "./pokemonFunctions";
 let loadingPage = 0; //used to make sure multiples of the same page are not loaded together
-const POKEMONS_PER_PAGE = 24 //number of pokemons on each page
+const POKEMONS_PER_PAGE = 24; //number of pokemons on each page
 
 //clear preview page
 async function clearPage() {
@@ -31,13 +31,15 @@ async function clearPage() {
 async function load() {
   const searchBar = document.getElementById("searchBar") as HTMLInputElement;
   const searchButton = document.getElementById("searchButton") as HTMLButtonElement;
-  searchButton!.onclick = () => {
-    fetchFromServer(searchBar!.value);
-    searchBar.value = "";
+  searchButton!.onclick = async () => {
+    if (searchBar.value.length > 0) {
+      await fetchFromServer(searchBar!.value);
+      searchBar.value = "";
+    }
   };
-  window!.onkeydown = (e) => {
+  window!.onkeydown = async (e) => {
     if (e.key === "Enter" && searchBar.value.length > 0) {
-      fetchFromServer(searchBar.value);
+      await fetchFromServer(searchBar.value);
       searchBar.value = "";
     }
   };
@@ -53,6 +55,7 @@ async function load() {
     let pageId = "page" + page!;
     pageButton.setAttribute("id", pageId);
     pageButton.addEventListener("click", () => {
+      clearSearch();
       getPage(page);
     });
     if (i == 1) {
@@ -74,6 +77,7 @@ function getButtons(first: number, last: number) {
     pageButton.classList.add("button" + (i - first));
     pageButton.setAttribute("id", "page" + i);
     pageButton.addEventListener("click", () => {
+      clearSearch();
       getPage(i);
     });
     document.getElementById("dynamicButtons")!.appendChild(pageButton);
