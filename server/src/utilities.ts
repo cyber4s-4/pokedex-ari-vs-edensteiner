@@ -18,7 +18,7 @@ export class Pokemon {
   }
 }
 
-//class for preview data
+//interface for preview data
 export interface PreviewData {
   name: string;
   front_image: string;
