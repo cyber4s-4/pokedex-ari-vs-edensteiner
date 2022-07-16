@@ -25,6 +25,7 @@ export interface PreviewData {
   back_image: string;
 }
 
+// following functions have been used to fuse the pokemons
 export function fuseNames(firstName: string, secondName: string): string {
   return firstName.substring(0, firstName.length / 2) + secondName.substring(secondName.length / 2, secondName.length);
 }

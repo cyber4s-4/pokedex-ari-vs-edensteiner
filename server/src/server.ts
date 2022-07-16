@@ -22,12 +22,6 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 // return amount of pokemons
-app.get("/pokemonCountv2", async (req: Request, res: Response) => {
-  const pokemons: number = await collection.countDocuments();
-  res.send(String(pokemons));
-});
-
-// return amount of pokemons
 app.get("/pokemonCount", async (req: Request, res: Response) => {
   const cursor: FindCursor = await collection.find({}).sort({ _id: -1 }).limit(1);
   const pokemons = await cursor.toArray();
