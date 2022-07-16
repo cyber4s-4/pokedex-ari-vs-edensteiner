@@ -22,9 +22,16 @@ app.get("/", async (req: Request, res: Response) => {
 });
 
 // return amount of pokemons
-app.get("/pokemonCount", async (req: Request, res: Response) => {
+app.get("/pokemonCountv2", async (req: Request, res: Response) => {
   const pokemons: number = await collection.countDocuments();
   res.send(String(pokemons));
+});
+
+// return amount of pokemons
+app.get("/pokemonCount", async (req: Request, res: Response) => {
+  const cursor: FindCursor = await collection.find({}).sort({ _id: -1 }).limit(1);
+  const pokemons = await cursor.toArray();
+  res.send(String(pokemons[0].index));
 });
 
 // send pokemon by id or name to client

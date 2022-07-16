@@ -1,6 +1,7 @@
 import { fetchFromServer, buildPokemon, clearSearch } from "./pokemonFunctions";
 let loadingPage = 0; //used to make sure multiples of the same page are not loaded together
-const POKEMONS_PER_PAGE = 24; //number of pokemons on each page
+const POKEMONS_PER_PAGE = 24 //number of pokemons on each page
+let pokemonCount: Promise<any>;
 
 //clear preview page
 async function clearPage() {
@@ -43,8 +44,7 @@ async function load() {
       searchBar.value = "";
     }
   };
-  let response = await fetch("http://localhost:3000/pokemonCount");
-  let pokemonLength = await response.json();
+  let pokemonLength = await pokemonCount;
   let pageCount = Math.ceil(Number(pokemonLength) / POKEMONS_PER_PAGE);
   for (let i = 1; i <= 2; i++) {
     let page: number;
@@ -94,9 +94,8 @@ async function getPage(page: number) {
     newLoad = 1;
   }
   if (newLoad == 1) {
-    let response = await fetch("http://localhost:3000/pokemonCount");
-    let pokemonLength = await response.json();
-    let pageCount = Math.ceil(pokemonLength / POKEMONS_PER_PAGE);
+    let pokemonLength = await pokemonCount;
+    let pageCount = Math.ceil(Number(pokemonLength) / POKEMONS_PER_PAGE);
     clearPage();
     const pageRequest = await fetch(`http://localhost:3000/page/${page}`);
     const pokemons = await pageRequest.json();
@@ -128,8 +127,10 @@ loadWebsite();
 
 // checks if data is loaded on server, while false keep checking. when true load website
 async function loadWebsite() {
-  let response = await fetch("http://localhost:3000/pokemonCount");
-  let serverDataIsLoaded = await response.json();
+  let response = await fetch("http://localhost:3000/pokemonCount")
+  pokemonCount = response.json();
+  let serverDataIsLoaded = pokemonCount;
+  // let serverDataIsLoaded = await response.json();
   if (!serverDataIsLoaded) {
     setTimeout(loadWebsite, 1000);
   } else {
