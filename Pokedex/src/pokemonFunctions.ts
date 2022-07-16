@@ -63,15 +63,9 @@ export async function fetchFromServer(pokemon: string) {
 }
 
 //clear search result
-function clearSearch() {
-  let htmlToClear = document.getElementsByClassName("innerHTML");
-  for (let element of htmlToClear) {
-    element.innerHTML = "";
-  }
-  let srcToClear = document.getElementsByClassName("src");
-  for (let element of srcToClear) {
-    element.removeAttribute("src");
-  }
+export function clearSearch() {
+  const pokemonDiv = document.getElementById("pokemon-div") as HTMLDivElement;
+  pokemonDiv.style.display = "none";
 }
 
 //builds a pokemon for the preview page
