@@ -90,3 +90,27 @@ export function fuseHeight(firstHeight: string, secondHeight: string): string {
 export function fuseImage(firstImage: string, secondImage: string): string {
   return Math.random() > 0.5 ? firstImage : secondImage;
 }
+
+export function fusePokemons(firstPokemon: Data, secondPokemon: Data): Data {
+  const pokemonName: string = fuseNames(firstPokemon.name, secondPokemon.name);
+  const pokemonFrontImage: string = fuseImage(firstPokemon.front_image, secondPokemon.front_image);
+  const pokemonBackImage: string = fuseImage(firstPokemon.back_image, secondPokemon.back_image);
+  const pokemonAbilities: string[] = fuseAbilities(firstPokemon.abilities, secondPokemon.abilities);
+  const pokemonTypes: string[] = fuseTypes(firstPokemon.types, secondPokemon.types);
+  const pokemonStats: string[] = fuseStats(firstPokemon.stats, secondPokemon.stats);
+  const pokemonWeight: string = fuseWeight(firstPokemon.weight, secondPokemon.weight);
+  const pokemonHeight: string = fuseHeight(firstPokemon.height, secondPokemon.height);
+
+  const pokemonData: Data = {
+    name: pokemonName,
+    front_image: pokemonFrontImage,
+    back_image: pokemonBackImage,
+    abilities: pokemonAbilities,
+    types: pokemonTypes,
+    stats: pokemonStats,
+    height: pokemonHeight,
+    weight: pokemonWeight,
+  };
+
+  return pokemonData;
+}
