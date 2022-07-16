@@ -39,23 +39,6 @@ app.get("/pokemon/:id", async (req: Request, res: Response) => {
   res.send(pokemon);
 });
 
-// send preview data  by id or name to client
-app.get("/preview/:id", async (req: Request, res: Response) => {
-  const id: string = req.params.id;
-  let pokemon: Document;
-  const cursor: FindCursor = isNaN(Number(id))
-    ? await collection.find({ "data.name": id })
-    : await collection.find({ index: Number(id) });
-  const items: Document[] = await cursor.toArray();
-  pokemon = items[0];
-  const previewData: PreviewData = {
-    name: pokemon.data.name,
-    front_image: pokemon.data.front_image,
-    back_image: pokemon.data.back_image,
-  };
-  res.send(previewData);
-});
-
 //send page info
 app.get("/page/:number", async (req: Request, res: Response) => {
   const pageNumber: number = Number(req.params.number);
