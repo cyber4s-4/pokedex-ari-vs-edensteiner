@@ -25,24 +25,49 @@ export interface PreviewData {
   back_image: string;
 }
 
-// following functions have been used to fuse the pokemons
+// functions for pokemon fusion
 export function fuseNames(firstName: string, secondName: string): string {
-  return firstName.substring(0, firstName.length / 2) + secondName.substring(secondName.length / 2, secondName.length);
+  return (
+    firstName.substring(0, firstName.length / 2) +
+    secondName.substring(secondName.length / 2, secondName.length)
+  );
 }
 
-export function fuseAbilities(firstAbilityList: string[], secondAbilityList: string[]): string[] {
-  const combinedAbilityList: string[] = [...firstAbilityList, ...secondAbilityList];
-  const shuffledList: string[] = combinedAbilityList.sort((a, b) => 0.5 - Math.random());
-  return shuffledList.slice(0, Math.floor(Math.random() * shuffledList.length + 1));
+export function fuseAbilities(
+  firstAbilityList: string[],
+  secondAbilityList: string[]
+): string[] {
+  const combinedAbilityList: string[] = [
+    ...firstAbilityList,
+    ...secondAbilityList,
+  ];
+  const shuffledList: string[] = combinedAbilityList.sort(
+    (a, b) => 0.5 - Math.random()
+  );
+  return shuffledList.slice(
+    0,
+    Math.floor(Math.random() * shuffledList.length + 1)
+  );
 }
 
-export function fuseTypes(firstTypeList: string[], secondTypeList: string[]): string[] {
+export function fuseTypes(
+  firstTypeList: string[],
+  secondTypeList: string[]
+): string[] {
   const combinedTypeList: string[] = [...firstTypeList, ...secondTypeList];
-  const shuffledList: string[] = combinedTypeList.sort((a, b) => 0.5 - Math.random());
-  return shuffledList.slice(0, Math.floor(Math.random() * shuffledList.length + 1));
+  const shuffledList: string[] = combinedTypeList.sort(
+    (a, b) => 0.5 - Math.random()
+  );
+  return shuffledList.slice(
+    0,
+    Math.floor(Math.random() * shuffledList.length + 1)
+  );
 }
 
-export function fuseStats(firstStatList: string[], secondStatList: string[]): string[] {
+export function fuseStats(
+  firstStatList: string[],
+  secondStatList: string[]
+): string[] {
   const hp: number =
     (Number(firstStatList[0].substring(firstStatList[0].search(" "))) +
       Number(secondStatList[0].substring(secondStatList[0].search(" ")))) /
@@ -94,13 +119,34 @@ export function fuseImage(firstImage: string, secondImage: string): string {
 
 export function fusePokemons(firstPokemon: Data, secondPokemon: Data): Data {
   const pokemonName: string = fuseNames(firstPokemon.name, secondPokemon.name);
-  const pokemonFrontImage: string = fuseImage(firstPokemon.front_image, secondPokemon.front_image);
-  const pokemonBackImage: string = fuseImage(firstPokemon.back_image, secondPokemon.back_image);
-  const pokemonAbilities: string[] = fuseAbilities(firstPokemon.abilities, secondPokemon.abilities);
-  const pokemonTypes: string[] = fuseTypes(firstPokemon.types, secondPokemon.types);
-  const pokemonStats: string[] = fuseStats(firstPokemon.stats, secondPokemon.stats);
-  const pokemonWeight: string = fuseWeight(firstPokemon.weight, secondPokemon.weight);
-  const pokemonHeight: string = fuseHeight(firstPokemon.height, secondPokemon.height);
+  const pokemonFrontImage: string = fuseImage(
+    firstPokemon.front_image,
+    secondPokemon.front_image
+  );
+  const pokemonBackImage: string = fuseImage(
+    firstPokemon.back_image,
+    secondPokemon.back_image
+  );
+  const pokemonAbilities: string[] = fuseAbilities(
+    firstPokemon.abilities,
+    secondPokemon.abilities
+  );
+  const pokemonTypes: string[] = fuseTypes(
+    firstPokemon.types,
+    secondPokemon.types
+  );
+  const pokemonStats: string[] = fuseStats(
+    firstPokemon.stats,
+    secondPokemon.stats
+  );
+  const pokemonWeight: string = fuseWeight(
+    firstPokemon.weight,
+    secondPokemon.weight
+  );
+  const pokemonHeight: string = fuseHeight(
+    firstPokemon.height,
+    secondPokemon.height
+  );
 
   const pokemonData: Data = {
     name: pokemonName,

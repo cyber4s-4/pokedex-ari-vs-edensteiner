@@ -2,8 +2,6 @@ const express = require("express");
 import { Request, Response } from "express";
 import { json } from "body-parser";
 const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
 import { create, connect } from "./mongo";
 import { Collection, Document, FindCursor } from "mongodb";
 import { PreviewData } from "./utilities";
@@ -16,20 +14,18 @@ let collection: Collection;
 //set collection
 connect(create()).then((res) => (collection = res));
 
-// checks server is running
-app.get("/", async (req: Request, res: Response) => {
-  res.send("it works");
-});
-
 // return amount of pokemons
-app.get("/pokemonCount", async (req: Request, res: Response) => {
-  const cursor: FindCursor = await collection.find({}).sort({ _id: -1 }).limit(1);
+app.get("/pokemonCount", async (req: Request, res: Response): Promise<void> => {
+  const cursor: FindCursor = await collection
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1);
   const pokemons = await cursor.toArray();
   res.send(String(pokemons[0].index));
 });
 
 // send pokemon by id or name to client
-app.get("/pokemon/:id", async (req: Request, res: Response) => {
+app.get("/pokemon/:id", async (req: Request, res: Response): Promise<void> => {
   const id: string = req.params.id;
   let pokemon: Document;
   const cursor: FindCursor = isNaN(Number(id))
@@ -41,13 +37,15 @@ app.get("/pokemon/:id", async (req: Request, res: Response) => {
 });
 
 //send page info
-app.get("/page/:number", async (req: Request, res: Response) => {
+app.get("/page/:number", async (req: Request, res: Response): Promise<void> => {
   const pageNumber: number = Number(req.params.number);
   let pokemons: Document[];
   let previewArray: PreviewData[] = [];
-  const cursor: FindCursor = await collection.find({ index: { $gte: 24 * pageNumber - 23, $lte: 24 * pageNumber } });
+  const cursor: FindCursor = await collection.find({
+    index: { $gte: 24 * pageNumber - 23, $lte: 24 * pageNumber },
+  });
   pokemons = await cursor.toArray();
-  pokemons.forEach((pokemon) => {
+  pokemons.forEach((pokemon): void => {
     previewArray.push({
       name: pokemon.data.name,
       front_image: pokemon.data.front_image,
