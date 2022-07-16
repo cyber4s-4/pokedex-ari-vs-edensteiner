@@ -1,5 +1,6 @@
 html {
   height: 98%;
+  min-width: 360px;
   body {
     display: flex;
     height: 100%;
@@ -60,10 +61,16 @@ html {
         text-align: center;
       }
     }
+    .pokemonPreview:hover {
+      cursor: pointer;
+    }
     #pageButtons {
       display: flex;
       justify-content: space-between;
       margin-top:  auto;
+      #dynamicButtons {
+        display: block;
+      }
     }
     .currentPage {
       color: blue;
