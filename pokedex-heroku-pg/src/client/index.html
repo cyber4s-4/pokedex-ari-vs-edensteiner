@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>The EA Pokedex!</title>
+    <base href="/" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <script src="app.js" defer></script>
+  </head>
+
+  <body>
+    <div id="search-div">
+      <input type="text" placeholder="Search a pokemon" id="searchBar" />
+      <button id="searchButton"><i class='fa'>&#xf002;</i></button>
+    </div>
+    <div id="pokemon-div" class="div" style="display: none">
+      <h1 id="name" class="innerHTML"></h1>
+      <div id="image-div">
+        <img id="frontImg" class="src" />
+        <img id="backImg" class="src" />
+      </div>
+      <p id="height" class="innerHTML"></p>
+      <p id="weight" class="innerHTML"></p>
+      <div id="lists">
+        <ul id="abilitiesList" class="innerHTML"></ul>
+        <ul id="typesList" class="innerHTML"></ul>
+        <ul id="statsList" class="innerHTML"></ul>
+      </div>
+    </div>
+    <div id="pokemonPreviewList">
+
+    </div>
+    <div id="pageButtons">
+      <div id="firstButton"></div>
+      <div id="dynamicButtons"></div>
+      <div id="lastButton"></div>
+    </div>
+  </body>
+</html>
